@@ -7,6 +7,7 @@ import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -20,12 +21,25 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
+    String fetchedJoke = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         AdView mAdView = (AdView) root.findViewById(R.id.adView);
+
+        //Set onclickListener for the button
+        Button jokeBtn = (Button) root.findViewById(R.id.joke_button);
+        jokeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchJoke();
+            }
+        });
+
+
         // Create an ad request. Check logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
         // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
@@ -34,13 +48,13 @@ public class MainActivityFragment extends Fragment {
                 .build();
         mAdView.loadAd(adRequest);
 
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(getContext(), "Terrell"));
+
 
         return root;
     }
 
     public void fetchJoke() {
-
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(getContext(), "Terrell"));
     }
 }
 
