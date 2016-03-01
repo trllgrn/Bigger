@@ -1,15 +1,16 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.example.jokefactory.JokeActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -22,7 +23,9 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    String fetchedJoke = "";
+    ProgressBar loadingBar = null;
+
+    public String fetchedJoke = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,11 +39,12 @@ public class MainActivityFragment extends Fragment {
         jokeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loadingBar.setVisibility(View.VISIBLE);
                 fetchJoke();
             }
         });
 
-        ProgressBar loadingBar = (ProgressBar) root.findViewById(R.id.joke_loading_spinner);
+        loadingBar = (ProgressBar) root.findViewById(R.id.joke_loading_spinner);
         loadingBar.setVisibility(View.GONE);
 
 
@@ -58,7 +62,23 @@ public class MainActivityFragment extends Fragment {
     }
 
     public void fetchJoke() {
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(getContext(), "Terrell"));
+        new EndpointsAsyncTask().execute(this);
+    }
+
+    public void launchJokeActivity() {
+        Context context = getActivity();
+
+        //Create a new Intent to launch the new JokeFactory Activity
+        Intent jokeIntent = new Intent(context,JokeActivity.class);
+
+        //Set a String Extra for the joke
+        jokeIntent.putExtra(context.getString(R.string.jokeID),fetchedJoke);
+
+        //start the Activity
+        context.startActivity(jokeIntent);
+
+        //let's try here
+        loadingBar.setVisibility(View.GONE);
     }
 }
 

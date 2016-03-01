@@ -1,12 +1,9 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.util.Pair;
 
 import com.example.bigger.backend.myApi.MyApi;
-import com.example.jokefactory.JokeActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -18,12 +15,22 @@ import java.io.IOException;
  * Created by greent on 2/24/16.
  */
 
-class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+class EndpointsAsyncTask extends AsyncTask<MainActivityFragment, Void, String> {
     private static MyApi myApiService = null;
+    private MainActivityFragment mainActivityFragment;
     private Context context;
 
     @Override
-    protected String doInBackground(Pair<Context, String>... params) {
+    protected String doInBackground(MainActivityFragment... params) {
+        mainActivityFragment = params[0];
+        context = mainActivityFragment.getActivity();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if(myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -42,9 +49,6 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
             myApiService = builder.build();
         }
 
-        context = params[0].first;
-        String name = params[0].second;
-
         try {
             return myApiService.getJoke().execute().getData();
         } catch (IOException e) {
@@ -54,15 +58,11 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
 
     @Override
     protected void onPostExecute(String result) {
+        //Set the fetchedJoke attribute in the fragment
+        mainActivityFragment.fetchedJoke = result;
+
         //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
 
-        //Create a new Intent to launch the new JokeFactory Activity
-        Intent jokeIntent = new Intent(context,JokeActivity.class);
-
-        //Set a String Extra for the joke
-        jokeIntent.putExtra(context.getString(R.string.jokeID),result);
-
-        //start the Activity
-        context.startActivity(jokeIntent);
+        mainActivityFragment.launchJokeActivity();
     }
 }
