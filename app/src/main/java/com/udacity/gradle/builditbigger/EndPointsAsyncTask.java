@@ -26,6 +26,7 @@ class EndpointsAsyncTask extends AsyncTask<MainActivityFragment, Void, String> {
         context = mainActivityFragment.getActivity();
 
         try {
+            //5 second delay to give the loading spinner progress bar a chance to show up
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();

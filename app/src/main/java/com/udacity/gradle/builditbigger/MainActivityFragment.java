@@ -23,6 +23,8 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
+    public boolean testFlag = false;
+
     ProgressBar loadingBar = null;
 
     public String fetchedJoke = null;
@@ -66,19 +68,21 @@ public class MainActivityFragment extends Fragment {
     }
 
     public void launchJokeActivity() {
-        Context context = getActivity();
+        if (!testFlag) {
+            Context context = getActivity();
 
-        //Create a new Intent to launch the new JokeFactory Activity
-        Intent jokeIntent = new Intent(context,JokeActivity.class);
+            //Create a new Intent to launch the new JokeFactory Activity
+            Intent jokeIntent = new Intent(context, JokeActivity.class);
 
-        //Set a String Extra for the joke
-        jokeIntent.putExtra(context.getString(R.string.jokeID),fetchedJoke);
+            //Set a String Extra for the joke
+            jokeIntent.putExtra(context.getString(R.string.jokeID), fetchedJoke);
 
-        //start the Activity
-        context.startActivity(jokeIntent);
+            //start the Activity
+            context.startActivity(jokeIntent);
 
-        //let's try here
-        loadingBar.setVisibility(View.GONE);
+            //let's try here
+            loadingBar.setVisibility(View.GONE);
+        }
     }
 }
 
