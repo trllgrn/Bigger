@@ -13,6 +13,10 @@ android {
         versionName "1.0"
     }
     buildTypes {
+
+        debug {
+            debuggable true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -38,8 +42,10 @@ dependencies {
     compile project(":joker")
     compile project(":jokefactory")
     compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.google.android.gms:play-services-ads:8.4.0'
+    //compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile project(path: ':backend', configuration: 'android-endpoints')
+
+    freeCompile 'com.google.android.gms:play-services-ads:8.4.0'
 
     //add Testing Dependencies
     androidTestCompile 'com.android.support:support-annotations:23.2.0'

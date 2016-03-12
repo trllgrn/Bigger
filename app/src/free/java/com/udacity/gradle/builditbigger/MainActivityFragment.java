@@ -12,8 +12,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.jokefactory.JokeActivity;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 
 /**
@@ -32,9 +34,51 @@ public class MainActivityFragment extends Fragment {
 
     public String fetchedJoke = null;
 
+    InterstitialAd mInterstitialAd;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //Set up for pre-fetching interstitial ad request
+        mInterstitialAd = new InterstitialAd(getContext());
+
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_test_ad_id));
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+
+                //process the joke Request
+                loadingBar.setVisibility(View.VISIBLE);
+                fetchJoke();
+
+                //pre-fetch the next ad
+                requestNewInterstitial();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+
+                Log.i(TAG, "onAdFailedToLoad: ad Failed to load. Reloading...");
+
+                //pre-fetch the next ad
+                requestNewInterstitial();
+
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                Log.i(TAG, "onAdLoaded: interstitial is ready!");
+            }
+        });
+
+        //Kick off the fetch
+        requestNewInterstitial();
+
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         AdView mAdView = (AdView) root.findViewById(R.id.adView);
@@ -44,15 +88,21 @@ public class MainActivityFragment extends Fragment {
         jokeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingBar.setVisibility(View.VISIBLE);
-                fetchJoke();
+                //show the interstitial if it's ready
+                if (mInterstitialAd.isLoaded()) {
+                    Log.i(TAG, "onClick: interstitial was ready");
+                    mInterstitialAd.show();
+                }
+                else {
+                    Log.i(TAG, "onClick: interstitial was not ready.");
+                    loadingBar.setVisibility(View.VISIBLE);
+                    fetchJoke();
+                }
             }
         });
 
         loadingBar = (ProgressBar) root.findViewById(R.id.joke_loading_spinner);
         loadingBar.setVisibility(View.GONE);
-
-        Log.i("freeDebug", "onCreateView: Loading ad.");
 
         // Create an ad request. Check logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
@@ -61,8 +111,6 @@ public class MainActivityFragment extends Fragment {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mAdView.loadAd(adRequest);
-
-        Log.i(TAG, "onCreateView: Finished onCreateView");
 
 
         return root;
@@ -88,6 +136,14 @@ public class MainActivityFragment extends Fragment {
             //let's try here
             loadingBar.setVisibility(View.GONE);
         }
+    }
+
+    private void requestNewInterstitial() {
+        Log.i(TAG, "requestNewInterstitial: Fetching interstitial...");
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                        .build();
+        mInterstitialAd.loadAd(adRequest);
     }
 }
 

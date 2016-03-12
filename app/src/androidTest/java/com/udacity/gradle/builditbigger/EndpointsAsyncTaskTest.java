@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class EndpointsAsyncTaskTest {
 
+    final String TAG = "GCETest";
+
     @Test
     public void testDoInBackground() throws Exception {
         //Create the fragment
@@ -24,6 +27,7 @@ public class EndpointsAsyncTaskTest {
         //The execution speed will vary on different machines, need at least 6 seconds, since
         //there is a 5s delay in the AsyncTask
         Thread.sleep(10000);
-        assertTrue("Error: Fetched Joke = " + fragment.fetchedJoke, fragment.fetchedJoke != null);
+        Log.i(TAG, "testDoInBackground: " + fragment.fetchedJoke);
+        assertTrue( "Error: fetchedJoke is : " + fragment.fetchedJoke,fragment.fetchedJoke.contains("snowman"));
     }
 }
